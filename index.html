@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSB. | Modern Portfolio</title>
+    
+    <!-- Modern Fonts: Outfit for Headings, Inter for Body -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS Variables & Theme --- */
+        :root {
+            --bg-base: #030712;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(56, 189, 248, 0.4);
+            
+            --primary: #38bdf8;
+            --secondary: #818cf8;
+            --accent: #c084fc;
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            --font-heading: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* --- Base Reset & Typography --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3, h4 { font-family: var(--font-heading); }
+
+        /* --- Ambient Background Glow --- */
+        .ambient-light {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: float 10s infinite alternate;
+        }
+        .light-1 {
+            top: -10%; left: -10%;
+            width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(3,7,18,0) 70%);
+        }
+        .light-2 {
+            bottom: 20%; right: -10%;
+            width: 40vw; height: 40vw;
+            background: radial-gradient(circle, rgba(192,132,252,0.15) 0%, rgba(3,7,18,0) 70%);
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section { padding: 8rem 0; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        /* --- Full-Width Navbar --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.2rem 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span { color: var(--primary); }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-main);
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 5rem;
+        }
+
+        .hero-badge {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            color: var(--primary);
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            display: inline-block;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 7vw, 6rem);
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-desc {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-family: var(--font-heading);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--text-main);
+            color: var(--bg-base);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255,255,255,0.1);
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: rgba(56, 189, 248, 0.05);
+            transform: translateY(-3px);
+        }
+
+        /* --- Social Links --- */
+        .social-bar {
+            margin-top: 3rem;
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: var(--transition);
+            background: var(--bg-card);
+            width: 45px; height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(56,189,248,0.2);
+        }
+
+        /* --- Modern Glass Card Base --- */
+        .bento-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bento-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .bento-card:hover::before { opacity: 1; }
+        .bento-card:hover { border-color: var(--border-hover); transform: translateY(-5px); }
+
+        /* --- Bento Grid (About & Skills) --- */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            grid-auto-rows: minmax(200px, auto);
+        }
+
+        .bento-large { grid-column: span 2; grid-row: span 2; }
+        .bento-tall { grid-row: span 2; }
+        .bento-wide { grid-column: span 2; }
+
+        .bento-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .bento-card h3 i { color: var(--primary); }
+
+        /* Skill Tags */
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        .tag {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        .tag:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* --- Projects Grid --- */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .project-date {
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .project-card h3 { font-size: 1.8rem; margin-bottom: 1rem; }
+        .project-card p { color: var(--text-muted); margin-bottom: 1.5rem; }
+
+        .project-bullets { list-style: none; margin-bottom: 2rem; }
+        .project-bullets li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .project-bullets li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        /* --- Minimalist Timeline --- */
+        .timeline {
+            border-left: 1px solid var(--border-color);
+            padding-left: 3rem;
+            margin-left: 1rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 4rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3.45rem;
+            top: 0.3rem;
+            width: 15px; height: 15px;
+            background: var(--bg-base);
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .timeline-item:hover::before {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .timeline-date {
+            color: var(--primary);
+            font-family: var(--font-heading);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.4rem;
+            color: var(--text-main);
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 4rem 0 2rem;
+            text-align: center;
+        }
+        
+        .footer-emails {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-emails a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+        .footer-emails a:hover { color: var(--primary); }
+
+        .copyright { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* --- Animations --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .bento-large, .bento-tall, .bento-wide { grid-column: span 1; grid-row: span 1; }
+            .nav-links { display: none; }
+            .logo { font-size: 1.15rem; }
+            .timeline { padding-left: 2rem; }
+            .timeline-item::before { left: -2.45rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Lights -->
+    <div class="ambient-light light-1"></div>
+    <div class="ambient-light light-2"></div>
+
+    <!-- Full-Width Navigation -->
+    <nav>
+        <div class="container nav-content">
+            <a href="#" class="logo">Chandra Shekar Behara<span>.</span></a>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#experience">Experience</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-badge reveal">System Status: Online</div>
+            <h1 class="reveal" style="transition-delay: 0.1s;">
+                Hi, I'm <br> <span class="gradient-text">Chandra Shekar</span> Behara.
+            </h1>
+            <p class="hero-desc reveal" style="transition-delay: 0.2s;">
+                A motivated BCA student bridging the gap between Data Structures, R Programming, and secure system design. I build, analyze, and lead.
+            </p>
+            <div class="btn-group reveal" style="transition-delay: 0.3s;">
+                <a href="#projects" class="btn btn-primary hover-target">View Projects <i class="fas fa-arrow-right"></i></a>
+                <a href="mailto:csb@csbblr.in" class="btn btn-outline hover-target">Contact Me</a>
+            </div>
+            
+            <div class="social-bar reveal" style="transition-delay: 0.4s;">
+                <a href="https://github.com/chandra1489-stdo" target="_blank" class="social-link hover-target" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/chandra-shekar-behara-79b774376" target="_blank" class="social-link hover-target" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="mailto:csb@csbblr.in" class="social-link hover-target" title="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bento Box: About & Skills -->
+    <section id="about" class="container">
+        <h2 class="section-title reveal">Profile & <span class="gradient-text">Arsenal</span></h2>
+        
+        <div class="bento-grid">
+            
+            <!-- Main About Box -->
+            <div class="bento-card bento-large reveal hover-target">
+                <h3><i class="fas fa-user-astronaut"></i> About Me</h3>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 1.5rem;">
+                    I am a dedicated Bachelor of Computer Applications (BCA) student at United International Business School in Bengaluru. My core interests lie in software development, data analysis, and cybersecurity fundamentals.
+                </p>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem;">
+                    Beyond code, I thrive in collaborative environments. As NSS General Secretary, Rotaract Service Director, and Class Representative, I've learned how to lead teams, solve complex problems, and communicate effectively across diverse groups.
+                </p>
+                <div style="display: flex; gap: 2rem;">
+                    <div>
+                        <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--primary); font-weight: 700;">84%</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">PUC Score</div>
+                    </div>
+                    <div>
+                        <div style="font-family: var(--font-heading); font-size: 2rem; color: var(--primary); font-weight: 700;">5</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Languages Spoken</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Stack Box -->
+            <div class="bento-card bento-tall reveal hover-target" style="transition-delay: 0.1s;">
+                <h3><i class="fas fa-code"></i> Tech Stack</h3>
+                <div class="skill-tags">
+                    <span class="tag">R Programming</span>
+                    <span class="tag">Python</span>
+                    <span class="tag">HTML5 & CSS3</span>
+                    <span class="tag">SQL</span>
+                    <span class="tag">Data Structures</span>
+                    <span class="tag">Cyber Security</span>
+                    <span class="tag">Data Analysis</span>
+                </div>
+            </div>
+
+            <!-- Tools Box -->
+            <div class="bento-card reveal hover-target" style="transition-delay: 0.2s;">
+                <h3><i class="fas fa-wrench"></i> Tools</h3>
+                <div class="skill-tags">
+                    <span class="tag">Git & GitHub</span>
+                    <span class="tag">VS Code</span>
+                    <span class="tag">Google Workspace</span>
+                    <span class="tag">MS Office Suite</span>
+                </div>
+            </div>
+
+            <!-- Languages Box -->
+            <div class="bento-card reveal hover-target" style="transition-delay: 0.3s;">
+                <h3><i class="fas fa-globe"></i> Languages</h3>
+                <div class="skill-tags">
+                    <span class="tag" style="border-color: var(--primary);">English (Pro)</span>
+                    <span class="tag">Hindi</span>
+                    <span class="tag">Telugu</span>
+                    <span class="tag">Kannada</span>
+                    <span class="tag">Odia</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="container">
+        <h2 class="section-title reveal">Featured <span class="gradient-text">Work</span></h2>
+        
+        <div class="projects-grid">
+            
+            <!-- Project 1 -->
+            <div class="bento-card project-card reveal hover-target">
+                <div>
+                    <div class="project-date">Feb 2026</div>
+                    <h3>Student Performance Dashboard</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <span class="tag" style="font-size: 0.8rem;">R Programming</span>
+                        <span class="tag" style="font-size: 0.8rem;">Data Analytics</span>
+                    </div>
+                    <p>An interactive data dashboard architected to ingest, analyze, and track student academic performance metrics.</p>
+                    <ul class="project-bullets">
+                        <li>Visualized complex academic results using advanced R programming libraries.</li>
+                        <li>Generated automated, insight-rich reports for deep performance analysis.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="bento-card project-card reveal hover-target" style="transition-delay: 0.1s;">
+                <div>
+                    <div class="project-date">April 2026</div>
+                    <h3>Multi-Dimensional Arrays System</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <span class="tag" style="font-size: 0.8rem;">Data Structures</span>
+                        <span class="tag" style="font-size: 0.8rem;">Algorithms</span>
+                    </div>
+                    <p>A collaborative academic deep-dive focusing on the complex operations and memory management of advanced data structures.</p>
+                    <ul class="project-bullets">
+                        <li>Detailed the specific mechanics of matrix insertion and deletion processes.</li>
+                        <li>Delivered a comprehensive technical presentation on algorithmic efficiency with teammates Suraj and John.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Experience & Education -->
+    <section id="experience" class="container">
+        <h2 class="section-title reveal">Path & <span class="gradient-text">Milestones</span></h2>
+        
+        <div class="bento-grid">
+            
+            <!-- Education Timeline -->
+            <div class="bento-card bento-wide reveal hover-target">
+                <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+                <div class="timeline" style="margin-top: 2rem;">
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">2025 - 2028</div>
+                        <div class="timeline-title">Bachelor of Computer Applications (BCA)</div>
+                        <div class="timeline-subtitle">United International Business School, Bengaluru</div>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">Studying core computer science, programming, data structures, and cybersecurity. Actively serving as NSS General Secretary and Class Representative.</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">June 2023 - March 2025</div>
+                        <div class="timeline-title">Pre-University Course (PUC)</div>
+                        <div class="timeline-subtitle">United Composite PU College, Bengaluru</div>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">Graduated with 84.33%. Built a strong foundation in analytical thinking.</p>
+                    </div>
+
+                    <div class="timeline-item" style="margin-bottom: 0;">
+                        <div class="timeline-date">June 2022 - March 2023</div>
+                        <div class="timeline-title">Secondary School (10th Standard)</div>
+                        <div class="timeline-subtitle">Yuvalok High School, Bengaluru</div>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">Completed secondary education with 58%.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Experience & Certs -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                
+                <div class="bento-card reveal hover-target" style="transition-delay: 0.1s;">
+                    <h3><i class="fas fa-briefcase"></i> Experience</h3>
+                    <div style="margin-top: 1.5rem;">
+                        <div style="color: var(--primary); font-size: 0.85rem; font-weight: 600;">April 2024 - June 2024</div>
+                        <div style="font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-main);">Data Entry Assistant</div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Bengaluru, India. Managed high-volume data entry, document preparation, and organized digital records.</p>
+                    </div>
+                </div>
+
+                <div class="bento-card reveal hover-target" style="transition-delay: 0.2s; flex-grow: 1;">
+                    <h3><i class="fas fa-certificate"></i> Certifications</h3>
+                    <ul style="list-style: none; margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                        <li style="color: var(--text-muted); font-size: 0.95rem;">
+                            <strong style="color: var(--text-main); display: block;">Cyber Security</strong> Basic concepts & online safety.
+                        </li>
+                        <li style="color: var(--text-muted); font-size: 0.95rem;">
+                            <strong style="color: var(--text-main); display: block;">MS Office</strong> Word, Excel, PowerPoint.
+                        </li>
+                        <li style="color: var(--text-muted); font-size: 0.95rem;">
+                            <strong style="color: var(--text-main); display: block;">Google Workshop</strong> Digital productivity tools.
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <h2 style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 1.5rem;">CSB.</h2>
+            
+            <div class="footer-emails">
+                <a href="mailto:csb@csbblr.in"><i class="fas fa-envelope"></i> csb@csbblr.in</a>
+                <a href="mailto:csb@csbblr.fun"><i class="fas fa-envelope"></i> csb@csbblr.fun</a>
+                <a href="mailto:csb@csbblr.online"><i class="fas fa-envelope"></i> csb@csbblr.online</a>
+            </div>
+            
+            <div class="footer-emails" style="margin-bottom: 3rem;">
+                <a href="https://github.com/chandra1489-stdo" target="_blank"><i class="fab fa-github"></i> chandra1489-stdo</a>
+                <a href="https://www.linkedin.com/in/chandra-shekar-behara-79b774376" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                <span style="color: var(--text-muted);"><i class="fas fa-phone"></i> +91 8296670811</span>
+            </div>
+
+            <p class="copyright">© 2026 Chandra Shekar Behara. Built for the future.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Glow effect following mouse on Bento Cards
+        document.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Scroll Reveal
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal(); // Trigger on load
+    </script>
+</body>
+</html>
